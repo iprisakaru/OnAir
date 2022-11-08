@@ -5,13 +5,13 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl.Flow
 import com.onairentertainment.models.NumberOfPlayersResponse
-import com.onairentertainment.models.NumberOfPlayersResponse.Decoder
+import com.onairentertainment.models.NumberOfPlayersResponse.requestGameDecoder
 import com.onairentertainment.models.ping.pong.Ping
 import com.onairentertainment.models.ping.pong.Ping.PingDecoder
 import com.onairentertainment.models.ping.pong.Pong.PongEncoder
 import com.onairentertainment.services.GameService
 import io.circe.syntax.EncoderOps
-import io.circe.{Json, parser}
+import io.circe.{parser, Json}
 
 import scala.util.Try
 
@@ -34,7 +34,10 @@ class GameController(
     ).toEither
     val result = decodeResult match {
       case Right(value) =>
-        gameService.playGame(value.numOfPlayers).map(_.map(_.asJson)).map(_.asJson).getOrElse(Json.arr())
+        Json.obj(
+          "message_type" -> Json.fromString("response.results"),
+          "results"      -> gameService.playGame(value.numOfPlayers).map(_.map(_.asJson)).map(_.asJson).getOrElse(Json.arr())
+        )
       case Left(value) => ("code" -> Json.fromInt(400), "message" -> "Bad Request. Check your message:)").asJson
     }
     TextMessage.Strict(result.toString)

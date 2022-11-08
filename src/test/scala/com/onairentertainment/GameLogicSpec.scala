@@ -18,10 +18,17 @@ class GameLogicSpec extends AnyFlatSpec with Matchers {
     assert(results.isEmpty)
   }
 
-  "GameService" should "generates numbers and counts results" in {
+  "GameService" should "generate numbers and counts results" in {
     when(randomService.generateNumbersForPlayers(3)).thenReturn(List(966337, 964373, 4283))
     val results = gameService.playGame(3)
     assert(results.get.nonEmpty)
-    assertResult(Player(1, 106, 966337, 1))(results.get.find(_.position == 1).get)
+    assertResult(Player(1, 20518, 966337, 1, 20412))(results.get.find(_.position == 1).get)
+  }
+
+  "GameService" should "count bonus for each number" in {
+    when(randomService.generateNumbersForPlayers(4)).thenReturn(List(966337, 964373, 4283, 121283))
+    val results = gameService.playGame(4)
+    assert(results.get.nonEmpty)
+    assertResult(Player(1, 20518, 966337, 1, 20412))(results.get.find(_.position == 1).get)
   }
 }

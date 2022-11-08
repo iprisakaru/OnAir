@@ -1,10 +1,10 @@
 package com.onairentertainment.models
 
 import io.circe.Decoder
-import io.circe.generic.semiauto.deriveDecoder
 
-case class NumberOfPlayersResponse(numOfPlayers: Int)
+case class NumberOfPlayersResponse(numOfPlayers: Int, messageType: String)
 
 object NumberOfPlayersResponse {
-  implicit val Decoder: Decoder[NumberOfPlayersResponse] = deriveDecoder[NumberOfPlayersResponse]
+  implicit val requestGameDecoder: Decoder[NumberOfPlayersResponse] =
+    Decoder.forProduct2("players", "message_type")(NumberOfPlayersResponse.apply)
 }

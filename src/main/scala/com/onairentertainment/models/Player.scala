@@ -3,7 +3,7 @@ package com.onairentertainment.models
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.{deriveDecoder, deriveEncoder}
 
-case class Player(position: Int, result: Int, number: Int, player: Int)
+case class Player(position: Int, result: Int, number: Int, player: Int, primeBonus: Int)
 
 object Player {
   implicit val Decoder: Decoder[Player]           = deriveDecoder[Player]

@@ -40,17 +40,17 @@ class WebSocketSpec extends AnyFlatSpec with Matchers with ScalatestRouteTest {
 
     val gameService: GameService = mock[GameService]
     val gameController           = new GameController(gameService)
-    when(gameService.playGame(1)).thenReturn(Option(List(Player(1, 1, 1, 1))))
+    when(gameService.playGame(1)).thenReturn(Option(List(Player(1, 1, 1, 1, 0))))
     val wsClient: WSProbe = WSProbe()
     WS("/game", wsClient.flow) ~> gameController.playGame ~>
       check {
         isWebSocketUpgrade shouldEqual true
 
-        wsClient.sendMessage("{\n  \"numOfPlayers\": 1\n}")
+        wsClient.sendMessage("{\n  \"players\": 1,\n  \"message_type\": \"request.play\"\n}")
         val message = wsClient.expectMessage()
         val pong    = parser.parse(message.asTextMessage.getStrictText)
-        val result  = pong.toOption.get.asArray.map(_.map(_.as[Player])).get.head.toOption.get
-        assertResult(Player(1, 1, 1, 1))(result)
+        val result  = (pong.toOption.get \\"results").head.asArray.map(_.map(_.as[Player])).get.head.toOption.get
+        assertResult(Player(1, 1, 1, 1, 0))(result)
 
         wsClient.sendCompletion()
         wsClient.expectCompletion()
